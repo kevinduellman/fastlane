@@ -172,7 +172,16 @@ module Spaceship
       rescue UnauthorizedAccessError => error
         # Catch unathorized access and re-raising
         # There is no need to try again
-        raise error
+        # raise error
+        puts("Error authenticating with ASC attempt #{tries} == #{error}")
+        tries -= 1
+        if tries.zero?
+          raise error
+        else
+          puts("Token has expired or has been revoked! Trying to refresh...")
+          @token.refresh!
+          retry
+        end        
       rescue TimeoutRetryError => error
         tries -= 1
         puts(error) if Spaceship::Globals.verbose?
@@ -181,7 +190,7 @@ module Spaceship
         else
           retry
         end
-      end
+      end      
 
       def handle_response(response)
         if (200...300).cover?(response.status) && (response.body.nil? || response.body.empty?)
