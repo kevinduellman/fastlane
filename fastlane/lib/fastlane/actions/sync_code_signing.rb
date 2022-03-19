@@ -9,6 +9,8 @@ module Fastlane
       def self.run(params)
         require 'match'
 
+        UI.header("BUTLER_ENV detected => Using Gemfile for Strava CI")
+
         params.load_configuration_file("Matchfile")
 
         # Only set :api_key from SharedValues if :api_key_path isn't set (conflicting options)
